@@ -35,6 +35,7 @@ export type {
   ExpenseDetails,
   CreateExpenseData,
   ExpenseListParams,
+  UpdateExpensePaymentsData,
 } from './expense.js';
 
 // Customer types
@@ -51,7 +52,11 @@ export type {
   InvoiceLine,
   InvoiceStatus,
   CreateInvoiceData,
+  CreateInvoiceLine,
   InvoiceListParams,
+  InvoiceCharge,
+  UpdateInvoiceChargesData,
+  InvoicePublicLink,
 } from './invoice.js';
 
 // Company types
@@ -59,3 +64,39 @@ export type { Company } from './company.js';
 
 // Account types
 export type { BankAccount, AccountListParams } from './account.js';
+
+// Income types
+export type {
+  Income,
+  IncomeLine,
+  IncomeCharge,
+  IncomeDetails,
+  CreateIncomeData,
+  CreateIncomeLine,
+  UpdateIncomeChargesData,
+  IncomeListParams,
+} from './income.js';
+
+// Document types
+export type {
+  Document,
+  DocumentAssignment,
+  CreateDocumentData,
+  UpdateDocumentData,
+  DocumentListParams,
+  DocumentAttachment,
+} from './document.js';
+
+// Tag types
+export type { Tag, TagListParams } from './tag.js';
+
+// Transfer types
+export type {
+  Transfer,
+  CreateTransferData,
+  UpdateTransferData,
+  TransferListParams,
+} from './transfer.js';
+
+// Invoice Serie types
+export type { InvoiceSerie } from './serie.js';

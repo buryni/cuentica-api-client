@@ -15,6 +15,7 @@ import type {
   Expense,
   CreateExpenseData,
   ExpenseListParams,
+  UpdateExpensePaymentsData,
 } from '../types/expense.js';
 import type { PaginatedResponse } from '../types/common.js';
 
@@ -33,6 +34,9 @@ export class ExpenseEndpoint {
     if (params?.provider_id) query.provider_id = params.provider_id;
     if (params?.date_from) query.date_from = params.date_from;
     if (params?.date_to) query.date_to = params.date_to;
+    if (params?.expense_type) query.expense_type = params.expense_type;
+    if (params?.order_field) query.order_field = params.order_field;
+    if (params?.order_direction) query.order_direction = params.order_direction;
     if (params?.page) query.page = params.page;
     if (params?.page_size) query.page_size = params.page_size;
 
@@ -117,5 +121,28 @@ export class ExpenseEndpoint {
    */
   async getAttachment(expenseId: number): Promise<{ content: Buffer; mimeType: string }> {
     return this.client.download(`/expense/${expenseId}/attachment`);
+  }
+
+  /**
+   * Delete attachment from an expense
+   */
+  async deleteAttachment(expenseId: number): Promise<void> {
+    await this.client.request<void>({
+      method: 'DELETE',
+      path: `/expense/${expenseId}/attachment`,
+    });
+  }
+
+  /**
+   * Update expense payments
+   *
+   * Updates the payment records for an expense.
+   */
+  async updatePayments(id: number, data: UpdateExpensePaymentsData): Promise<Expense> {
+    return this.client.request<Expense>({
+      method: 'PUT',
+      path: `/expense/${id}/payments`,
+      body: data,
+    });
   }
 }

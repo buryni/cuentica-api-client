@@ -126,6 +126,7 @@ export class ProviderEndpoint {
     const businessType = inferBusinessType(data.tax_id);
 
     // Build provider data with correct field names
+    // API only accepts: cif, nombre, business_name, business_type, pais
     const providerData: CreateProviderData = {
       cif: data.tax_id.toUpperCase(),
       nombre: data.business_name,
@@ -133,12 +134,6 @@ export class ProviderEndpoint {
       business_type: businessType,
       pais: 'ES',
     };
-
-    // Add optional fields only if they have values
-    if (data.address) providerData.address = data.address;
-    if (data.town) providerData.town = data.town;
-    if (data.postal_code) providerData.postal_code = data.postal_code;
-    if (data.region) providerData.region = data.region;
 
     return this.create(providerData);
   }

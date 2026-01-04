@@ -13,6 +13,10 @@ import {
   InvoiceEndpoint,
   AccountEndpoint,
   CompanyEndpoint,
+  IncomeEndpoint,
+  DocumentEndpoint,
+  TagEndpoint,
+  TransferEndpoint,
 } from './endpoints/index.js';
 
 /**
@@ -74,6 +78,18 @@ export class CuenticaAPI {
   /** Company information */
   public readonly company: CompanyEndpoint;
 
+  /** Income (Ingreso) operations */
+  public readonly incomes: IncomeEndpoint;
+
+  /** Document (Documento) operations */
+  public readonly documents: DocumentEndpoint;
+
+  /** Tag (Etiqueta) operations */
+  public readonly tags: TagEndpoint;
+
+  /** Transfer (Traspaso) operations */
+  public readonly transfers: TransferEndpoint;
+
   constructor(config: CuenticaClientConfig) {
     this.client = new CuenticaClient(config);
     this.providers = new ProviderEndpoint(this.client);
@@ -82,6 +98,10 @@ export class CuenticaAPI {
     this.invoices = new InvoiceEndpoint(this.client);
     this.accounts = new AccountEndpoint(this.client);
     this.company = new CompanyEndpoint(this.client);
+    this.incomes = new IncomeEndpoint(this.client);
+    this.documents = new DocumentEndpoint(this.client);
+    this.tags = new TagEndpoint(this.client);
+    this.transfers = new TransferEndpoint(this.client);
   }
 
   /**

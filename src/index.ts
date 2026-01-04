@@ -68,6 +68,10 @@ export {
   InvoiceEndpoint,
   AccountEndpoint,
   CompanyEndpoint,
+  IncomeEndpoint,
+  DocumentEndpoint,
+  TagEndpoint,
+  TransferEndpoint,
 } from './endpoints/index.js';
 
 // Types
@@ -94,6 +98,7 @@ export type {
   ExpenseDetails,
   CreateExpenseData,
   ExpenseListParams,
+  UpdateExpensePaymentsData,
   // Customer
   Customer,
   CreateCustomerData,
@@ -105,11 +110,39 @@ export type {
   InvoiceStatus,
   CreateInvoiceData,
   InvoiceListParams,
+  InvoiceCharge,
+  UpdateInvoiceChargesData,
+  InvoicePublicLink,
   // Company
   Company,
   // Account
   BankAccount,
   AccountListParams,
+  // Income
+  Income,
+  IncomeLine,
+  IncomeCharge,
+  IncomeDetails,
+  CreateIncomeData,
+  UpdateIncomeChargesData,
+  IncomeListParams,
+  // Document
+  Document,
+  DocumentAssignment,
+  CreateDocumentData,
+  UpdateDocumentData,
+  DocumentListParams,
+  DocumentAttachment,
+  // Tag
+  Tag,
+  TagListParams,
+  // Transfer
+  Transfer,
+  CreateTransferData,
+  UpdateTransferData,
+  TransferListParams,
+  // Invoice Serie
+  InvoiceSerie,
 } from './types/index.js';
 
 // Helper functions

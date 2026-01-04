@@ -34,7 +34,8 @@ export interface Provider {
 /**
  * Data required to create a new provider
  *
- * Note: Both 'nombre' and 'business_name' are required despite docs only mentioning 'nombre'
+ * Required: cif, nombre, business_name, business_type, pais
+ * Optional: address, town, postal_code, region (must be lowercase Spanish region name)
  */
 export interface CreateProviderData {
   /** Tax ID (CIF/NIF) - Required */
@@ -58,36 +59,28 @@ export interface CreateProviderData {
   /** Country code (e.g., 'ES') - Required */
   pais: string;
 
-  /** Street address */
+  /** Street address (optional) */
   address?: string;
 
-  /** City/Town */
+  /** City/Town (optional) */
   town?: string;
 
-  /** Postal code */
+  /** Postal code (optional) */
   postal_code?: string;
 
-  /** Region/Province */
+  /** Region/Province (optional, must be lowercase: 'madrid', 'barcelona', etc.) */
   region?: string;
-
-  /** Phone number */
-  phone?: string;
-
-  /** Email address */
-  email?: string;
-
-  /** Website URL */
-  web?: string;
-
-  /** Additional notes */
-  notes?: string;
 }
 
 /**
  * Data for updating an existing provider
+ * API only accepts: business_name, nombre (not business_type)
  */
-export interface UpdateProviderData extends Partial<CreateProviderData> {
-  id?: never; // ID cannot be updated
+export interface UpdateProviderData {
+  /** Business name */
+  business_name?: string;
+  /** Trade name */
+  nombre?: string;
 }
 
 /**
