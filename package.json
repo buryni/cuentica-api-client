@@ -1,0 +1,69 @@
+{
+  "name": "@nexusland/cuentica-api-client",
+  "version": "0.1.0",
+  "description": "TypeScript client for the Cuentica accounting API with corrected types and full documentation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./constants": {
+      "import": "./dist/constants/index.js",
+      "types": "./dist/constants/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "cuentica",
+    "api",
+    "accounting",
+    "invoices",
+    "expenses",
+    "spain",
+    "facturacion",
+    "contabilidad"
+  ],
+  "author": "Nexusland",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nexusland/cuentica-api-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nexusland/cuentica-api-client/issues"
+  },
+  "homepage": "https://github.com/nexusland/cuentica-api-client#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "prettier": "^3.1.0"
+  }
+}
