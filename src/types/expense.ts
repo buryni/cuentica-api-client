@@ -171,32 +171,31 @@ export interface CreateExpenseData {
 
   /**
    * Expense line items - Required!
-   * Note: Documentation shows flat structure, but API requires array
+   * API requires: description, base, tax, retention, imputation, expense_type
    */
   expense_lines: Array<{
     description: string;
     base: number;
     /** VAT PERCENTAGE (0, 4, 10, 12, 21), NOT amount! */
     tax: VATRate;
-    retention?: number;
-    surcharge?: number;
+    /** Retention percentage - Required by API (use 0 if none) */
+    retention: number;
     /** Required! Use 100 for full attribution */
     imputation: number;
     /** Specific expense type code (e.g., '6290006') */
     expense_type: string;
-    investment?: boolean;
-    isp?: boolean;
   }>;
 
   /**
    * Payment records - Required!
-   * Documentation doesn't mention this but API requires it
+   * API requires: date, amount, payment_method, origin_account, paid
+   * Note: The API error says origin_account is not in "available keys" but it IS required
    */
   payments: Array<{
     date: string;
     amount: number;
     payment_method: PaymentMethod;
-    origin_account?: number;
+    origin_account: number;
     paid: boolean;
   }>;
 }
@@ -211,6 +210,26 @@ export interface ExpenseListParams {
   date_from?: string;
   /** Filter to date (YYYY-MM-DD) */
   date_to?: string;
+  /** Filter by expense type */
+  expense_type?: string;
+  /** Order field */
+  order_field?: 'date' | 'created_on';
+  /** Order direction */
+  order_direction?: 'asc' | 'desc';
   page?: number;
   page_size?: number;
+}
+
+/**
+ * Data for updating expense payments
+ * API requires: date, amount, payment_method, origin_account, paid
+ */
+export interface UpdateExpensePaymentsData {
+  payments: Array<{
+    date: string;
+    amount: number;
+    payment_method: PaymentMethod;
+    origin_account: number;
+    paid: boolean;
+  }>;
 }

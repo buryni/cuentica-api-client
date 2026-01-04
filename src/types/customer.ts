@@ -60,9 +60,37 @@ export interface CreateCustomerData {
 
 /**
  * Data for updating an existing customer
+ * API requires ALL fields on update, not just changed ones
  */
-export interface UpdateCustomerData extends Partial<CreateCustomerData> {
-  id?: never;
+export interface UpdateCustomerData {
+  /** Tax ID (CIF/NIF) */
+  cif?: string;
+  /** Business/legal name */
+  business_name?: string;
+  /** Trade name */
+  trade_name?: string;
+  /** Business type */
+  business_type?: BusinessType;
+  /** Street address */
+  address?: string;
+  /** City */
+  city?: string;
+  /** Town */
+  town?: string;
+  /** Postal code */
+  postal_code?: string;
+  /** Region/Province */
+  region?: string;
+  /** Country code (e.g., 'ES') */
+  country?: string;
+  /** Phone number */
+  phone?: string;
+  /** Email address */
+  email?: string;
+  /** Website URL */
+  web?: string;
+  /** Additional notes */
+  notes?: string;
 }
 
 /**
