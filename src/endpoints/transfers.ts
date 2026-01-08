@@ -28,8 +28,9 @@ export class TransferEndpoint {
     if (params?.origin_account) query.origin_account = params.origin_account;
     if (params?.destination_account) query.destination_account = params.destination_account;
     if (params?.payment_method) query.payment_method = params.payment_method;
-    if (params?.date_from) query.date_from = params.date_from;
-    if (params?.date_to) query.date_to = params.date_to;
+    // API expects initial_date/end_date, not date_from/date_to
+    if (params?.date_from) query.initial_date = params.date_from;
+    if (params?.date_to) query.end_date = params.date_to;
     if (params?.page) query.page = params.page;
     if (params?.page_size) query.page_size = params.page_size;
 

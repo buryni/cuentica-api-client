@@ -47,13 +47,14 @@ describe('ExpenseEndpoint', () => {
         page_size: 25,
       });
 
+      // NOTE: date_from/date_to in params are translated to initial_date/end_date for the API
       expect(client.paginatedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/expense',
         query: {
           provider_id: 1,
-          date_from: '2024-01-01',
-          date_to: '2024-12-31',
+          initial_date: '2024-01-01',
+          end_date: '2024-12-31',
           expense_type: '6290006',
           order_field: 'date',
           order_direction: 'desc',

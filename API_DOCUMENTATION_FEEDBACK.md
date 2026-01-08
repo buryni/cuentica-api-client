@@ -304,6 +304,129 @@ La API puede devolver "Invalid Json" si se envía este header en GETs.
 
 ---
 
+## 11. Parámetros de Filtrado de Fechas
+
+### Discrepancia Crítica
+
+**Documentación esperada:** Los parámetros de fecha se llamarían `date_from` y `date_to`.
+
+**Comportamiento real:** La API espera **`initial_date`** y **`end_date`**, NO `date_from`/`date_to`.
+
+### Endpoints afectados:
+- `GET /expense` - usa `initial_date`, `end_date`
+- `GET /income` - usa `initial_date`, `end_date`
+- `GET /invoice` - usa `initial_date`, `end_date`
+- `GET /transfer` - usa `initial_date`, `end_date`
+- `GET /document` - usa `initial_date`, `end_date`
+
+### Ejemplo:
+
+```bash
+# Esto NO FUNCIONA (los filtros se ignoran):
+curl '/expense?date_from=2024-01-01&date_to=2024-12-31'
+
+# Esto SÍ FUNCIONA:
+curl '/expense?initial_date=2024-01-01&end_date=2024-12-31'
+```
+
+### Sugerencia:
+Documentar claramente los nombres de parámetros reales (`initial_date`, `end_date`).
+
+---
+
+## 12. Paginación
+
+### Discrepancia
+
+**Documentación esperada:** El parámetro `page_size` permite controlar el número de elementos por página.
+
+**Comportamiento real:** La API **ignora** el parámetro `page_size` y siempre devuelve **25 elementos** por página.
+
+### Ejemplo:
+
+```bash
+# Se solicitan 5 elementos:
+curl '/expense?page_size=5'
+
+# Respuesta:
+{
+  "page": 1,
+  "page_size": 25,  // ← Ignora el 5 solicitado
+  "total_pages": 10,
+  "total_items": 250,
+  "items": [...]    // ← Devuelve hasta 25 elementos
+}
+```
+
+### Sugerencia:
+- Si `page_size` no es soportado, documentar que siempre son 25 elementos por página
+- O implementar soporte para `page_size` variable
+
+---
+
+## 13. Ordenamiento
+
+### Discrepancia
+
+**Documentación esperada:** Los parámetros `order_field` y `order_direction` permiten ordenar resultados.
+
+**Comportamiento real:** La API **no siempre respeta** estos parámetros. Los resultados pueden venir en un orden diferente al solicitado.
+
+### Endpoints afectados:
+- `GET /expense`
+- `GET /income`
+- `GET /invoice`
+
+### Ejemplo:
+
+```bash
+# Se solicita orden ascendente por fecha:
+curl '/expense?order_field=date&order_direction=asc'
+
+# Respuesta: Los elementos NO siempre vienen ordenados ascendentemente
+```
+
+### Sugerencia:
+Si el ordenamiento tiene limitaciones, documentarlas claramente.
+
+---
+
+## 14. Filtros que No Funcionan Consistentemente
+
+### customer_id en Invoices
+
+**Documentación:** Permite filtrar facturas por cliente.
+
+**Comportamiento real:** El filtro puede no funcionar correctamente. La API devuelve facturas de otros clientes.
+
+```bash
+# Se solicitan facturas del cliente 123:
+curl '/invoice?customer_id=123'
+
+# Respuesta: Puede incluir facturas de clientes diferentes a 123
+```
+
+### provider_id en Expenses
+
+**Documentación:** Permite filtrar gastos por proveedor.
+
+**Comportamiento real:** Similar al caso anterior, el filtro puede ser ignorado.
+
+### active en Accounts
+
+**Documentación:** Permite filtrar cuentas por estado activo/inactivo.
+
+**Comportamiento real:** El filtro no funciona. Se devuelven todas las cuentas independientemente del valor de `active`.
+
+```bash
+# Se solicitan solo cuentas activas:
+curl '/account?active=true'
+
+# Respuesta: Puede incluir cuentas inactivas
+```
+
+---
+
 ## Sugerencias Generales
 
 1. **Documentar todos los campos requeridos** para cada endpoint, distinguiendo entre creación y actualización.
@@ -318,6 +441,13 @@ La API puede devolver "Invalid Json" si se envía este header en GETs.
 
 6. **Documentar diferencias** entre campos similares (ej: `charged` vs `paid`).
 
+7. **Documentar nombres reales de parámetros** (`initial_date`/`end_date` en lugar de `date_from`/`date_to`).
+
+8. **Documentar limitaciones de paginación** (siempre 25 elementos por página).
+
+9. **Documentar limitaciones de ordenamiento** y filtros que pueden no funcionar.
+
 ---
 
 *Documento generado con el objetivo de mejorar la experiencia de desarrolladores que integran con Cuentica.*
+*Última actualización: 7 de Enero de 2026*

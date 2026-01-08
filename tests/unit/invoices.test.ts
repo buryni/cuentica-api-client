@@ -49,14 +49,15 @@ describe('InvoiceEndpoint', () => {
         page_size: 25,
       });
 
+      // NOTE: date_from/date_to in params are translated to initial_date/end_date for the API
       expect(client.paginatedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/invoice',
         query: {
           customer_id: 1,
           status: 'paid',
-          date_from: '2024-01-01',
-          date_to: '2024-12-31',
+          initial_date: '2024-01-01',
+          end_date: '2024-12-31',
           serie: 'F',
           tags: 'tag1,tag2',
           order_field: 'date',

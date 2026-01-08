@@ -32,8 +32,9 @@ export class ExpenseEndpoint {
     const query: Record<string, string | number | undefined> = {};
 
     if (params?.provider_id) query.provider_id = params.provider_id;
-    if (params?.date_from) query.date_from = params.date_from;
-    if (params?.date_to) query.date_to = params.date_to;
+    // API expects initial_date/end_date, not date_from/date_to
+    if (params?.date_from) query.initial_date = params.date_from;
+    if (params?.date_to) query.end_date = params.date_to;
     if (params?.expense_type) query.expense_type = params.expense_type;
     if (params?.order_field) query.order_field = params.order_field;
     if (params?.order_direction) query.order_direction = params.order_direction;

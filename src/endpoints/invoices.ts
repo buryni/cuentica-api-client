@@ -26,8 +26,8 @@ export class InvoiceEndpoint {
 
     if (params?.customer_id) query.customer_id = params.customer_id;
     if (params?.status) query.status = params.status;
-    if (params?.date_from) query.date_from = params.date_from;
-    if (params?.date_to) query.date_to = params.date_to;
+    if (params?.date_from) query.initial_date = params.date_from;
+    if (params?.date_to) query.end_date = params.date_to;
     if (params?.serie) query.serie = params.serie;
     if (params?.tags) query.tags = params.tags.join(',');
     if (params?.order_field) query.order_field = params.order_field;

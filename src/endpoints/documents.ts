@@ -26,8 +26,9 @@ export class DocumentEndpoint {
   async list(params?: DocumentListParams): Promise<PaginatedResponse<Document>> {
     const query: Record<string, string | number | undefined> = {};
 
-    if (params?.date_from) query.date_from = params.date_from;
-    if (params?.date_to) query.date_to = params.date_to;
+    // API expects initial_date/end_date, not date_from/date_to
+    if (params?.date_from) query.initial_date = params.date_from;
+    if (params?.date_to) query.end_date = params.date_to;
     if (params?.extension) query.extension = params.extension;
     if (params?.assignment) query.assignment = params.assignment;
     if (params?.page) query.page = params.page;
