@@ -1,5 +1,10 @@
 # @nexusland/cuentica-api-client
 
+[![npm version](https://img.shields.io/npm/v/@nexusland/cuentica-api-client.svg)](https://www.npmjs.com/package/@nexusland/cuentica-api-client)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/node/v/@nexusland/cuentica-api-client.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+
 Cliente TypeScript para la API de [Cuentica](https://www.cuentica.com/), el software de facturación y contabilidad para autónomos y pymes en España.
 
 > **Importante:** Esta librería incluye tipos corregidos y documentación basada en pruebas reales con la API. La documentación oficial de Cuentica tiene numerosas discrepancias con el comportamiento real. Ver [Errores en la documentación oficial](#errores-en-la-documentación-oficial).

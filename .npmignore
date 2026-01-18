@@ -1,0 +1,41 @@
+# Source files (we ship compiled dist/)
+src/
+
+# Tests
+tests/
+coverage/
+vitest.config.ts
+
+# Documentation (extra, README is included via package.json files)
+docs/
+API_DOCUMENTATION_FEEDBACK.md
+CONTRIBUTING.md
+
+# Development files
+.github/
+.vscode/
+.idea/
+
+# Config files
+tsconfig.json
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# Scripts and utilities
+test-api.mjs
+
+# Environment
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+# Misc
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db

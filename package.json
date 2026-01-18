@@ -1,6 +1,6 @@
 {
   "name": "@nexusland/cuentica-api-client",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "TypeScript client for the Cuentica accounting API with corrected types and full documentation",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,7 +23,8 @@
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -42,9 +43,12 @@
     "expenses",
     "spain",
     "facturacion",
-    "contabilidad"
+    "contabilidad",
+    "typescript",
+    "autonomos",
+    "pymes"
   ],
-  "author": "Nexusland",
+  "author": "Nexus Land SL <hola@nexusland.es>",
   "license": "MIT",
   "repository": {
     "type": "git",
