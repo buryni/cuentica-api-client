@@ -46,32 +46,40 @@ export class IncomeEndpoint {
    * Get an income by ID
    */
   async get(id: number): Promise<Income> {
-    return this.client.request<Income>({
+    const result = await this.client.cachedRequest<Income>({
       method: 'GET',
       path: `/income/${id}`,
     });
+    return result.data;
   }
 
   /**
    * Create a new income
    */
   async create(data: CreateIncomeData): Promise<Income> {
-    return this.client.request<Income>({
+    const result = await this.client.request<Income>({
       method: 'POST',
       path: '/income',
       body: data,
     });
+    // Invalidate incomes cache
+    this.client.invalidateCache('income');
+    return result;
   }
 
   /**
    * Update an existing income
    */
   async update(id: number, data: Partial<CreateIncomeData>): Promise<Income> {
-    return this.client.request<Income>({
+    const result = await this.client.request<Income>({
       method: 'PUT',
       path: `/income/${id}`,
       body: data,
     });
+    // Invalidate income list and specific entry cache
+    this.client.invalidateCache('income');
+    this.client.deleteFromCache(`income/${id}`);
+    return result;
   }
 
   /**
@@ -82,6 +90,9 @@ export class IncomeEndpoint {
       method: 'DELETE',
       path: `/income/${id}`,
     });
+    // Invalidate income list and specific entry cache
+    this.client.invalidateCache('income');
+    this.client.deleteFromCache(`income/${id}`);
   }
 
   /**
@@ -100,12 +111,16 @@ export class IncomeEndpoint {
     filename: string,
     mimeType: string
   ): Promise<{ id: number }> {
-    return this.client.upload(
+    const result = await this.client.upload(
       `/income/${incomeId}/attachment`,
       file,
       filename,
       mimeType
     );
+    // Invalidate income list and specific entry cache
+    this.client.invalidateCache('income');
+    this.client.deleteFromCache(`income/${incomeId}`);
+    return result;
   }
 
   /**
@@ -116,6 +131,9 @@ export class IncomeEndpoint {
       method: 'DELETE',
       path: `/income/${incomeId}/attachment`,
     });
+    // Invalidate income list and specific entry cache
+    this.client.invalidateCache('income');
+    this.client.deleteFromCache(`income/${incomeId}`);
   }
 
   /**
@@ -124,10 +142,14 @@ export class IncomeEndpoint {
    * Updates the charge records for an income.
    */
   async updateCharges(id: number, data: UpdateIncomeChargesData): Promise<Income> {
-    return this.client.request<Income>({
+    const result = await this.client.request<Income>({
       method: 'PUT',
       path: `/income/${id}/charges`,
       body: data,
     });
+    // Invalidate income list and specific entry cache
+    this.client.invalidateCache('income');
+    this.client.deleteFromCache(`income/${id}`);
+    return result;
   }
 }

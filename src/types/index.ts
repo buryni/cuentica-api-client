@@ -100,3 +100,12 @@ export type {
 
 // Invoice Serie types
 export type { InvoiceSerie } from './serie.js';
+
+// Cache types
+export type {
+  CacheConfig,
+  CacheEntry,
+  CachedResponse,
+  CacheKeyPattern,
+} from './cache.js';
+export { CacheTTL } from './cache.js';

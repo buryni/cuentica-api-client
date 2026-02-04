@@ -52,10 +52,11 @@ export class ExpenseEndpoint {
    * Get an expense by ID
    */
   async get(id: number): Promise<Expense> {
-    return this.client.request<Expense>({
+    const result = await this.client.cachedRequest<Expense>({
       method: 'GET',
       path: `/expense/${id}`,
     });
+    return result.data;
   }
 
   /**
@@ -69,22 +70,29 @@ export class ExpenseEndpoint {
    * - document_type is required ('invoice' or 'ticket')
    */
   async create(data: CreateExpenseData): Promise<Expense> {
-    return this.client.request<Expense>({
+    const result = await this.client.request<Expense>({
       method: 'POST',
       path: '/expense',
       body: data,
     });
+    // Invalidate expenses cache
+    this.client.invalidateCache('expense');
+    return result;
   }
 
   /**
    * Update an existing expense
    */
   async update(id: number, data: Partial<CreateExpenseData>): Promise<Expense> {
-    return this.client.request<Expense>({
+    const result = await this.client.request<Expense>({
       method: 'PUT',
       path: `/expense/${id}`,
       body: data,
     });
+    // Invalidate expense list and specific entry cache
+    this.client.invalidateCache('expense');
+    this.client.deleteFromCache(`expense/${id}`);
+    return result;
   }
 
   /**
@@ -95,6 +103,9 @@ export class ExpenseEndpoint {
       method: 'DELETE',
       path: `/expense/${id}`,
     });
+    // Invalidate expense list and specific entry cache
+    this.client.invalidateCache('expense');
+    this.client.deleteFromCache(`expense/${id}`);
   }
 
   /**
@@ -109,12 +120,16 @@ export class ExpenseEndpoint {
     filename: string,
     mimeType: string
   ): Promise<{ id: number }> {
-    return this.client.upload(
+    const result = await this.client.upload(
       `/expense/${expenseId}/attachment`,
       file,
       filename,
       mimeType
     );
+    // Invalidate expense list and specific entry cache
+    this.client.invalidateCache('expense');
+    this.client.deleteFromCache(`expense/${expenseId}`);
+    return result;
   }
 
   /**
@@ -132,6 +147,9 @@ export class ExpenseEndpoint {
       method: 'DELETE',
       path: `/expense/${expenseId}/attachment`,
     });
+    // Invalidate expense list and specific entry cache
+    this.client.invalidateCache('expense');
+    this.client.deleteFromCache(`expense/${expenseId}`);
   }
 
   /**
@@ -140,10 +158,14 @@ export class ExpenseEndpoint {
    * Updates the payment records for an expense.
    */
   async updatePayments(id: number, data: UpdateExpensePaymentsData): Promise<Expense> {
-    return this.client.request<Expense>({
+    const result = await this.client.request<Expense>({
       method: 'PUT',
       path: `/expense/${id}/payments`,
       body: data,
     });
+    // Invalidate expense list and specific entry cache
+    this.client.invalidateCache('expense');
+    this.client.deleteFromCache(`expense/${id}`);
+    return result;
   }
 }

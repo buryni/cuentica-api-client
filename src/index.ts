@@ -52,6 +52,11 @@ export { CuenticaAPI, createCuenticaAPI } from './api.js';
 export { CuenticaClient, createClientFromEnv } from './client.js';
 export type { CuenticaClientConfig, RequestOptions } from './client.js';
 
+// Cache
+export { CacheManager } from './cache.js';
+export type { CacheConfig, CachedResponse, CacheEntry, CacheKeyPattern } from './types/cache.js';
+export { CacheTTL } from './types/cache.js';
+
 // Errors
 export {
   CuenticaError,

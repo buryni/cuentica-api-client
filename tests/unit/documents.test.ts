@@ -64,11 +64,11 @@ describe('DocumentEndpoint', () => {
   describe('get', () => {
     it('should get document by ID', async () => {
       const mockDocument = mockData.document();
-      vi.mocked(client.request).mockResolvedValue(mockDocument);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: mockDocument, cached: false });
 
       const result = await endpoint.get(1);
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/document/1',
       });
@@ -97,6 +97,7 @@ describe('DocumentEndpoint', () => {
         path: '/document',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('document');
       expect(result).toEqual(mockDocument);
     });
   });
@@ -118,6 +119,8 @@ describe('DocumentEndpoint', () => {
         path: '/document/1',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('document');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('document/1');
       expect(result).toEqual(mockDocument);
     });
   });
@@ -132,6 +135,8 @@ describe('DocumentEndpoint', () => {
         method: 'DELETE',
         path: '/document/1',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('document');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('document/1');
     });
   });
 

@@ -68,11 +68,14 @@ describe('ExpenseEndpoint', () => {
   describe('get', () => {
     it('should get expense by ID', async () => {
       const mockExpense = mockData.expense();
-      vi.mocked(client.request).mockResolvedValue(mockExpense);
+      vi.mocked(client.cachedRequest).mockResolvedValue({
+        data: mockExpense,
+        cached: false,
+      });
 
       const result = await endpoint.get(1);
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/expense/1',
       });
@@ -117,6 +120,7 @@ describe('ExpenseEndpoint', () => {
         path: '/expense',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('expense');
       expect(result).toEqual(mockExpense);
     });
   });
@@ -134,6 +138,8 @@ describe('ExpenseEndpoint', () => {
         path: '/expense/1',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('expense');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('expense/1');
       expect(result).toEqual(mockExpense);
     });
   });
@@ -148,6 +154,8 @@ describe('ExpenseEndpoint', () => {
         method: 'DELETE',
         path: '/expense/1',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('expense');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('expense/1');
     });
   });
 
@@ -165,6 +173,8 @@ describe('ExpenseEndpoint', () => {
         'invoice.pdf',
         'application/pdf'
       );
+      expect(client.invalidateCache).toHaveBeenCalledWith('expense');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('expense/1');
       expect(result).toEqual(mockResponse);
     });
   });
@@ -194,6 +204,8 @@ describe('ExpenseEndpoint', () => {
         method: 'DELETE',
         path: '/expense/1/attachment',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('expense');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('expense/1');
     });
   });
 
@@ -221,6 +233,8 @@ describe('ExpenseEndpoint', () => {
         path: '/expense/1/payments',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('expense');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('expense/1');
       expect(result).toEqual(mockExpense);
     });
   });

@@ -37,4 +37,13 @@ export class TagEndpoint {
     const result = await this.list({ page_size: 300 });
     return result.data;
   }
+
+  /**
+   * Invalidate tags cache
+   *
+   * Call this after making changes to tags through other means.
+   */
+  invalidateCache(): number {
+    return this.client.invalidateCache('tag');
+  }
 }

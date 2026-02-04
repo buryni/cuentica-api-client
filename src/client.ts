@@ -12,7 +12,9 @@ import {
   CuenticaRateLimitError,
   CuenticaNetworkError,
 } from './errors.js';
-import type { PaginationInfo, PaginatedResponse } from './types/common.js';
+import type { PaginationInfo, PaginatedResponse, CachedPaginatedResponse } from './types/common.js';
+import type { CacheConfig, CachedResponse, CacheKeyPattern } from './types/cache.js';
+import { CacheManager } from './cache.js';
 
 /**
  * Client configuration options
@@ -28,6 +30,8 @@ export interface CuenticaClientConfig {
   logger?: (message: string, data?: unknown) => void;
   /** Request timeout in milliseconds (default: 30000) */
   timeout?: number;
+  /** Cache configuration */
+  cache?: CacheConfig;
 }
 
 /**
@@ -38,6 +42,8 @@ export interface RequestOptions {
   path: string;
   body?: unknown;
   query?: Record<string, string | number | boolean | undefined>;
+  /** Skip cache for this request */
+  skipCache?: boolean;
 }
 
 /**
@@ -57,6 +63,7 @@ export class CuenticaClient {
   private readonly debug: boolean;
   private readonly logger: (message: string, data?: unknown) => void;
   private readonly timeout: number;
+  private readonly cacheManager: CacheManager;
 
   constructor(config: CuenticaClientConfig) {
     if (!config.apiToken) {
@@ -72,6 +79,7 @@ export class CuenticaClient {
         console.log(`[CuenticaClient] ${msg}`, data || '');
       }
     });
+    this.cacheManager = new CacheManager(config.cache);
   }
 
   /**
@@ -83,9 +91,46 @@ export class CuenticaClient {
   }
 
   /**
-   * Make a paginated API request
+   * Make an API request with cache information
+   */
+  async cachedRequest<T>(options: RequestOptions): Promise<CachedResponse<T>> {
+    const result = await this.makeRequestWithCache<T>(options);
+    return {
+      data: result.data,
+      cached: result.cached,
+    };
+  }
+
+  /**
+   * Make a paginated API request with cache support
    */
   async paginatedRequest<T>(options: RequestOptions): Promise<PaginatedResponse<T>> {
+    const canCache = options.method === 'GET' && !options.skipCache;
+
+    if (canCache) {
+      const cacheKey = CacheManager.generateKey(options.path, options.query);
+      const cachedData = this.cacheManager.get<{ data: T[]; pagination: PaginationInfo }>(cacheKey);
+
+      if (cachedData !== undefined) {
+        this.logger('Cache hit (paginated)', { path: options.path, key: cacheKey });
+        return cachedData;
+      }
+
+      const result = await this.makeRequest<T[]>(options);
+      const pagination = this.parsePaginationHeaders(result.headers);
+
+      const paginatedResult = {
+        data: result.data,
+        pagination,
+      };
+
+      const ttl = this.cacheManager.getTtlForPath(options.path);
+      this.cacheManager.set(cacheKey, paginatedResult, ttl);
+      this.logger('Cache set (paginated)', { path: options.path, key: cacheKey, ttl });
+
+      return paginatedResult;
+    }
+
     const result = await this.makeRequest<T[]>(options);
     const pagination = this.parsePaginationHeaders(result.headers);
 
@@ -93,6 +138,34 @@ export class CuenticaClient {
       data: result.data,
       pagination,
     };
+  }
+
+  /**
+   * Invalidate cache entries by pattern
+   */
+  invalidateCache(pattern: CacheKeyPattern): number {
+    return this.cacheManager.invalidate(pattern);
+  }
+
+  /**
+   * Clear all cache entries
+   */
+  clearCache(): void {
+    this.cacheManager.clear();
+  }
+
+  /**
+   * Delete a specific cache entry by key
+   */
+  deleteFromCache(key: string): boolean {
+    return this.cacheManager.delete(key);
+  }
+
+  /**
+   * Get cache statistics
+   */
+  getCacheStats(): { size: number; keys: string[] } {
+    return this.cacheManager.stats();
   }
 
   /**
@@ -177,6 +250,40 @@ export class CuenticaClient {
       clearTimeout(timeoutId);
       throw this.handleFetchError(error);
     }
+  }
+
+  /**
+   * Internal method to make HTTP requests with cache support
+   */
+  private async makeRequestWithCache<T>(
+    options: RequestOptions
+  ): Promise<RequestResult<T> & { cached: boolean }> {
+    const canCache = options.method === 'GET' && !options.skipCache;
+
+    if (canCache) {
+      const cacheKey = CacheManager.generateKey(options.path, options.query);
+      const cachedData = this.cacheManager.get<T>(cacheKey);
+
+      if (cachedData !== undefined) {
+        this.logger('Cache hit', { path: options.path, key: cacheKey });
+        return {
+          data: cachedData,
+          headers: new Headers(),
+          cached: true,
+        };
+      }
+    }
+
+    const result = await this.makeRequest<T>(options);
+
+    if (canCache) {
+      const cacheKey = CacheManager.generateKey(options.path, options.query);
+      const ttl = this.cacheManager.getTtlForPath(options.path);
+      this.cacheManager.set(cacheKey, result.data, ttl);
+      this.logger('Cache set', { path: options.path, key: cacheKey, ttl });
+    }
+
+    return { ...result, cached: false };
   }
 
   /**

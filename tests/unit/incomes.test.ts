@@ -66,11 +66,14 @@ describe('IncomeEndpoint', () => {
   describe('get', () => {
     it('should get income by ID', async () => {
       const mockIncome = mockData.income();
-      vi.mocked(client.request).mockResolvedValue(mockIncome);
+      vi.mocked(client.cachedRequest).mockResolvedValue({
+        data: mockIncome,
+        cached: false,
+      });
 
       const result = await endpoint.get(1);
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/income/1',
       });
@@ -111,6 +114,7 @@ describe('IncomeEndpoint', () => {
         path: '/income',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('income');
       expect(result).toEqual(mockIncome);
     });
   });
@@ -128,6 +132,8 @@ describe('IncomeEndpoint', () => {
         path: '/income/1',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('income');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('income/1');
       expect(result).toEqual(mockIncome);
     });
   });
@@ -142,6 +148,8 @@ describe('IncomeEndpoint', () => {
         method: 'DELETE',
         path: '/income/1',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('income');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('income/1');
     });
   });
 
@@ -174,6 +182,8 @@ describe('IncomeEndpoint', () => {
         'receipt.pdf',
         'application/pdf'
       );
+      expect(client.invalidateCache).toHaveBeenCalledWith('income');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('income/1');
       expect(result).toEqual(mockResponse);
     });
   });
@@ -188,6 +198,8 @@ describe('IncomeEndpoint', () => {
         method: 'DELETE',
         path: '/income/1/attachment',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('income');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('income/1');
     });
   });
 
@@ -215,6 +227,8 @@ describe('IncomeEndpoint', () => {
         path: '/income/1/charges',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('income');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('income/1');
       expect(result).toEqual(mockIncome);
     });
   });

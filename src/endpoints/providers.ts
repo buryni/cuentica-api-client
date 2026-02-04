@@ -16,7 +16,7 @@ import type {
   ProviderListParams,
 } from '../types/provider.js';
 import { inferBusinessType } from '../types/provider.js';
-import type { PaginatedResponse } from '../types/common.js';
+import type { PaginatedResponse, CachedResponse } from '../types/common.js';
 
 /**
  * Provider operations
@@ -62,32 +62,40 @@ export class ProviderEndpoint {
    * Get a provider by ID
    */
   async get(id: number): Promise<Provider> {
-    return this.client.request<Provider>({
+    const result = await this.client.cachedRequest<Provider>({
       method: 'GET',
       path: `/provider/${id}`,
     });
+    return result.data;
   }
 
   /**
    * Create a new provider
    */
   async create(data: CreateProviderData): Promise<Provider> {
-    return this.client.request<Provider>({
+    const result = await this.client.request<Provider>({
       method: 'POST',
       path: '/provider',
       body: data,
     });
+    // Invalidate providers cache
+    this.client.invalidateCache('provider');
+    return result;
   }
 
   /**
    * Update an existing provider
    */
   async update(id: number, data: UpdateProviderData): Promise<Provider> {
-    return this.client.request<Provider>({
+    const result = await this.client.request<Provider>({
       method: 'PUT',
       path: `/provider/${id}`,
       body: data,
     });
+    // Invalidate provider list and specific entry cache
+    this.client.invalidateCache('provider');
+    this.client.deleteFromCache(`provider/${id}`);
+    return result;
   }
 
   /**
@@ -98,6 +106,9 @@ export class ProviderEndpoint {
       method: 'DELETE',
       path: `/provider/${id}`,
     });
+    // Invalidate provider list and specific entry cache
+    this.client.invalidateCache('provider');
+    this.client.deleteFromCache(`provider/${id}`);
   }
 
   /**

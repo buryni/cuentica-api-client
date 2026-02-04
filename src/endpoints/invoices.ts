@@ -46,32 +46,40 @@ export class InvoiceEndpoint {
    * Get an invoice by ID
    */
   async get(id: number): Promise<Invoice> {
-    return this.client.request<Invoice>({
+    const result = await this.client.cachedRequest<Invoice>({
       method: 'GET',
       path: `/invoice/${id}`,
     });
+    return result.data;
   }
 
   /**
    * Create a new invoice
    */
   async create(data: CreateInvoiceData): Promise<Invoice> {
-    return this.client.request<Invoice>({
+    const result = await this.client.request<Invoice>({
       method: 'POST',
       path: '/invoice',
       body: data,
     });
+    // Invalidate invoices cache
+    this.client.invalidateCache('invoice');
+    return result;
   }
 
   /**
    * Update an existing invoice
    */
   async update(id: number, data: Partial<CreateInvoiceData>): Promise<Invoice> {
-    return this.client.request<Invoice>({
+    const result = await this.client.request<Invoice>({
       method: 'PUT',
       path: `/invoice/${id}`,
       body: data,
     });
+    // Invalidate invoice list and specific entry cache
+    this.client.invalidateCache('invoice');
+    this.client.deleteFromCache(`invoice/${id}`);
+    return result;
   }
 
   /**
@@ -82,6 +90,9 @@ export class InvoiceEndpoint {
       method: 'DELETE',
       path: `/invoice/${id}`,
     });
+    // Invalidate invoice list and specific entry cache
+    this.client.invalidateCache('invoice');
+    this.client.deleteFromCache(`invoice/${id}`);
   }
 
   /**
@@ -100,6 +111,8 @@ export class InvoiceEndpoint {
       path: `/invoice/${id}/email`,
       body: email ? { email } : undefined,
     });
+    // Invalidate invoices cache
+    this.client.invalidateCache('invoice');
   }
 
   /**
@@ -109,10 +122,14 @@ export class InvoiceEndpoint {
    * (Spanish electronic invoicing system).
    */
   async void(id: number): Promise<Invoice> {
-    return this.client.request<Invoice>({
+    const result = await this.client.request<Invoice>({
       method: 'POST',
       path: `/invoice/${id}/void`,
     });
+    // Invalidate invoice list and specific entry cache
+    this.client.invalidateCache('invoice');
+    this.client.deleteFromCache(`invoice/${id}`);
+    return result;
   }
 
   /**
@@ -121,10 +138,11 @@ export class InvoiceEndpoint {
    * Returns a public URL where the invoice can be viewed without authentication.
    */
   async getPublicLink(id: number): Promise<InvoicePublicLink> {
-    return this.client.request<InvoicePublicLink>({
+    const result = await this.client.cachedRequest<InvoicePublicLink>({
       method: 'GET',
       path: `/invoice/${id}/public`,
     });
+    return result.data;
   }
 
   /**
@@ -133,10 +151,14 @@ export class InvoiceEndpoint {
    * Updates the payment records for an invoice.
    */
   async updateCharges(id: number, data: UpdateInvoiceChargesData): Promise<Invoice> {
-    return this.client.request<Invoice>({
+    const result = await this.client.request<Invoice>({
       method: 'PUT',
       path: `/invoice/${id}/charges`,
       body: data,
     });
+    // Invalidate invoice list and specific entry cache
+    this.client.invalidateCache('invoice');
+    this.client.deleteFromCache(`invoice/${id}`);
+    return result;
   }
 }

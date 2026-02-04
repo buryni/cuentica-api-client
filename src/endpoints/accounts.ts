@@ -4,7 +4,7 @@
 
 import type { CuenticaClient } from '../client.js';
 import type { BankAccount, AccountListParams } from '../types/account.js';
-import type { PaginatedResponse } from '../types/common.js';
+import type { PaginatedResponse, CachedResponse } from '../types/common.js';
 
 /**
  * Account operations
@@ -33,10 +33,11 @@ export class AccountEndpoint {
    * Get an account by ID
    */
   async get(id: number): Promise<BankAccount> {
-    return this.client.request<BankAccount>({
+    const result = await this.client.cachedRequest<BankAccount>({
       method: 'GET',
       path: `/account/${id}`,
     });
+    return result.data;
   }
 
   /**

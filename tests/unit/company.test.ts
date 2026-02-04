@@ -18,11 +18,11 @@ describe('CompanyEndpoint', () => {
   describe('get', () => {
     it('should fetch company information', async () => {
       const mockCompany = mockData.company();
-      vi.mocked(client.request).mockResolvedValue(mockCompany);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: mockCompany, cached: false });
 
       const result = await endpoint.get();
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/company',
       });
@@ -33,11 +33,11 @@ describe('CompanyEndpoint', () => {
   describe('getSeries', () => {
     it('should fetch invoice series', async () => {
       const mockSeries = [mockData.invoiceSerie()];
-      vi.mocked(client.request).mockResolvedValue(mockSeries);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: mockSeries, cached: false });
 
       const result = await endpoint.getSeries();
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/company/serie',
       });
@@ -46,7 +46,7 @@ describe('CompanyEndpoint', () => {
     });
 
     it('should return empty array when no series exist', async () => {
-      vi.mocked(client.request).mockResolvedValue([]);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: [], cached: false });
 
       const result = await endpoint.getSeries();
 

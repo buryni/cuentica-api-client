@@ -66,11 +66,11 @@ describe('TransferEndpoint', () => {
   describe('get', () => {
     it('should get transfer by ID', async () => {
       const mockTransfer = mockData.transfer();
-      vi.mocked(client.request).mockResolvedValue(mockTransfer);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: mockTransfer, cached: false });
 
       const result = await endpoint.get(1);
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/transfer/1',
       });
@@ -99,6 +99,7 @@ describe('TransferEndpoint', () => {
         path: '/transfer',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('transfer');
       expect(result).toEqual(mockTransfer);
     });
   });
@@ -119,6 +120,8 @@ describe('TransferEndpoint', () => {
         path: '/transfer/1',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('transfer');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('transfer/1');
       expect(result).toEqual(mockTransfer);
     });
   });
@@ -133,6 +136,8 @@ describe('TransferEndpoint', () => {
         method: 'DELETE',
         path: '/transfer/1',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('transfer');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('transfer/1');
     });
   });
 });

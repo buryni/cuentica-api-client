@@ -16,19 +16,21 @@ export class CompanyEndpoint {
    * Get company information
    */
   async get(): Promise<Company> {
-    return this.client.request<Company>({
+    const result = await this.client.cachedRequest<Company>({
       method: 'GET',
       path: '/company',
     });
+    return result.data;
   }
 
   /**
    * Get invoice series for the company
    */
   async getSeries(): Promise<InvoiceSerie[]> {
-    return this.client.request<InvoiceSerie[]>({
+    const result = await this.client.cachedRequest<InvoiceSerie[]>({
       method: 'GET',
       path: '/company/serie',
     });
+    return result.data;
   }
 }

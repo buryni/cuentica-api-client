@@ -45,10 +45,11 @@ export class DocumentEndpoint {
    * Get a document by ID
    */
   async get(id: number): Promise<Document> {
-    return this.client.request<Document>({
+    const result = await this.client.cachedRequest<Document>({
       method: 'GET',
       path: `/document/${id}`,
     });
+    return result.data;
   }
 
   /**
@@ -57,22 +58,29 @@ export class DocumentEndpoint {
    * The file should be provided as base64 encoded string.
    */
   async create(data: CreateDocumentData): Promise<Document> {
-    return this.client.request<Document>({
+    const result = await this.client.request<Document>({
       method: 'POST',
       path: '/document',
       body: data,
     });
+    // Invalidate documents cache
+    this.client.invalidateCache('document');
+    return result;
   }
 
   /**
    * Update an existing document
    */
   async update(id: number, data: UpdateDocumentData): Promise<Document> {
-    return this.client.request<Document>({
+    const result = await this.client.request<Document>({
       method: 'PUT',
       path: `/document/${id}`,
       body: data,
     });
+    // Invalidate document list and specific entry cache
+    this.client.invalidateCache('document');
+    this.client.deleteFromCache(`document/${id}`);
+    return result;
   }
 
   /**
@@ -83,6 +91,9 @@ export class DocumentEndpoint {
       method: 'DELETE',
       path: `/document/${id}`,
     });
+    // Invalidate document list and specific entry cache
+    this.client.invalidateCache('document');
+    this.client.deleteFromCache(`document/${id}`);
   }
 
   /**

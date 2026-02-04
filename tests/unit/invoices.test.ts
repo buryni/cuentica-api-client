@@ -72,11 +72,11 @@ describe('InvoiceEndpoint', () => {
   describe('get', () => {
     it('should get invoice by ID', async () => {
       const mockInvoice = mockData.invoice();
-      vi.mocked(client.request).mockResolvedValue(mockInvoice);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: mockInvoice, cached: false });
 
       const result = await endpoint.get(1);
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/invoice/1',
       });
@@ -109,6 +109,7 @@ describe('InvoiceEndpoint', () => {
         path: '/invoice',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
       expect(result).toEqual(mockInvoice);
     });
   });
@@ -126,6 +127,8 @@ describe('InvoiceEndpoint', () => {
         path: '/invoice/1',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('invoice/1');
       expect(result).toEqual(mockInvoice);
     });
   });
@@ -140,6 +143,8 @@ describe('InvoiceEndpoint', () => {
         method: 'DELETE',
         path: '/invoice/1',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('invoice/1');
     });
   });
 
@@ -169,6 +174,7 @@ describe('InvoiceEndpoint', () => {
         path: '/invoice/1/email',
         body: undefined,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
     });
 
     it('should send invoice to custom email', async () => {
@@ -181,6 +187,7 @@ describe('InvoiceEndpoint', () => {
         path: '/invoice/1/email',
         body: { email: 'custom@email.com' },
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
     });
   });
 
@@ -195,6 +202,8 @@ describe('InvoiceEndpoint', () => {
         method: 'POST',
         path: '/invoice/1/void',
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('invoice/1');
       expect(result.status).toBe('cancelled');
     });
   });
@@ -202,11 +211,11 @@ describe('InvoiceEndpoint', () => {
   describe('getPublicLink', () => {
     it('should get public link for invoice', async () => {
       const mockLink = mockData.invoicePublicLink();
-      vi.mocked(client.request).mockResolvedValue(mockLink);
+      vi.mocked(client.cachedRequest).mockResolvedValue({ data: mockLink, cached: false });
 
       const result = await endpoint.getPublicLink(1);
 
-      expect(client.request).toHaveBeenCalledWith({
+      expect(client.cachedRequest).toHaveBeenCalledWith({
         method: 'GET',
         path: '/invoice/1/public',
       });
@@ -238,6 +247,8 @@ describe('InvoiceEndpoint', () => {
         path: '/invoice/1/charges',
         body: data,
       });
+      expect(client.invalidateCache).toHaveBeenCalledWith('invoice');
+      expect(client.deleteFromCache).toHaveBeenCalledWith('invoice/1');
       expect(result).toEqual(mockInvoice);
     });
   });

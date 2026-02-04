@@ -59,6 +59,13 @@ export interface PaginatedResponse<T> {
 }
 
 /**
+ * Paginated response with cache information
+ */
+export interface CachedPaginatedResponse<T> extends PaginatedResponse<T> {
+  cached: boolean;
+}
+
+/**
  * API Error structure
  */
 export interface ApiErrorDetail {

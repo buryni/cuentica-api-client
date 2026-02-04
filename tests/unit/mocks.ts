@@ -11,9 +11,14 @@ import type { CuenticaClient } from '../../src/client.js';
 export function createMockClient(): CuenticaClient {
   return {
     request: vi.fn(),
+    cachedRequest: vi.fn().mockImplementation((data) => Promise.resolve({ data, cached: false })),
     paginatedRequest: vi.fn(),
     download: vi.fn(),
     upload: vi.fn(),
+    invalidateCache: vi.fn().mockReturnValue(0),
+    deleteFromCache: vi.fn().mockReturnValue(true),
+    clearCache: vi.fn(),
+    getCacheStats: vi.fn().mockReturnValue({ size: 0, keys: [] }),
   } as unknown as CuenticaClient;
 }
 
@@ -148,5 +153,43 @@ export const mockData = {
     destination_account_name: 'Caja',
     payment_method: 'wire_transfer' as const,
     concept: 'Transfer test',
+  }),
+
+  customer: () => ({
+    id: 1,
+    cif: 'B12345678',
+    business_name: 'Test Customer SL',
+    trade_name: 'Test Customer',
+    business_type: 'company' as const,
+    address: 'Calle Test 123',
+    city: 'Madrid',
+    postal_code: '28001',
+    region: 'Madrid',
+    country: 'ES',
+    email: 'test@customer.com',
+  }),
+
+  provider: () => ({
+    id: 1,
+    cif: 'B87654321',
+    business_name: 'Test Provider SL',
+    tradename: 'Test Provider',
+    business_type: 'company' as const,
+    address: 'Calle Proveedor 456',
+    town: 'Barcelona',
+    postal_code: '08001',
+    region: 'Catalunya',
+    country_code: 'ES',
+    email: 'test@provider.com',
+  }),
+
+  account: () => ({
+    id: 1,
+    name: 'Cuenta Corriente',
+    account_number: 'ES12 3456 7890 1234 5678 9012',
+    bank_name: 'Banco Test',
+    balance: 10000,
+    is_default: true,
+    active: true,
   }),
 };

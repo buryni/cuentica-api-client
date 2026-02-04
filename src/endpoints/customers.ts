@@ -54,32 +54,40 @@ export class CustomerEndpoint {
    * Get a customer by ID
    */
   async get(id: number): Promise<Customer> {
-    return this.client.request<Customer>({
+    const result = await this.client.cachedRequest<Customer>({
       method: 'GET',
       path: `/customer/${id}`,
     });
+    return result.data;
   }
 
   /**
    * Create a new customer
    */
   async create(data: CreateCustomerData): Promise<Customer> {
-    return this.client.request<Customer>({
+    const result = await this.client.request<Customer>({
       method: 'POST',
       path: '/customer',
       body: data,
     });
+    // Invalidate customer list cache
+    this.client.invalidateCache('customer');
+    return result;
   }
 
   /**
    * Update an existing customer
    */
   async update(id: number, data: UpdateCustomerData): Promise<Customer> {
-    return this.client.request<Customer>({
+    const result = await this.client.request<Customer>({
       method: 'PUT',
       path: `/customer/${id}`,
       body: data,
     });
+    // Invalidate customer list and specific entry cache
+    this.client.invalidateCache('customer');
+    this.client.deleteFromCache(`customer/${id}`);
+    return result;
   }
 
   /**
@@ -90,5 +98,8 @@ export class CustomerEndpoint {
       method: 'DELETE',
       path: `/customer/${id}`,
     });
+    // Invalidate customer list and specific entry cache
+    this.client.invalidateCache('customer');
+    this.client.deleteFromCache(`customer/${id}`);
   }
 }

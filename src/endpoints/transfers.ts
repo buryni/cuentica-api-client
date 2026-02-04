@@ -45,32 +45,40 @@ export class TransferEndpoint {
    * Get a transfer by ID
    */
   async get(id: number): Promise<Transfer> {
-    return this.client.request<Transfer>({
+    const result = await this.client.cachedRequest<Transfer>({
       method: 'GET',
       path: `/transfer/${id}`,
     });
+    return result.data;
   }
 
   /**
    * Create a new transfer
    */
   async create(data: CreateTransferData): Promise<Transfer> {
-    return this.client.request<Transfer>({
+    const result = await this.client.request<Transfer>({
       method: 'POST',
       path: '/transfer',
       body: data,
     });
+    // Invalidate transfers cache
+    this.client.invalidateCache('transfer');
+    return result;
   }
 
   /**
    * Update an existing transfer
    */
   async update(id: number, data: UpdateTransferData): Promise<Transfer> {
-    return this.client.request<Transfer>({
+    const result = await this.client.request<Transfer>({
       method: 'PUT',
       path: `/transfer/${id}`,
       body: data,
     });
+    // Invalidate transfer list and specific entry cache
+    this.client.invalidateCache('transfer');
+    this.client.deleteFromCache(`transfer/${id}`);
+    return result;
   }
 
   /**
@@ -81,5 +89,8 @@ export class TransferEndpoint {
       method: 'DELETE',
       path: `/transfer/${id}`,
     });
+    // Invalidate transfer list and specific entry cache
+    this.client.invalidateCache('transfer');
+    this.client.deleteFromCache(`transfer/${id}`);
   }
 }
